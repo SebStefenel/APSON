@@ -12,18 +12,13 @@ if response.status_code == 200:
     # Parse the HTML content
     soup = BeautifulSoup(response.content, "html.parser")
     
-    # Extract relevant information (modify based on your inspection)
-    announcements = soup.find_all("div", class_="announcement-class")  # Replace with actual HTML tags and classes
+    # Find all <a> tags that contain the outage descriptions
+    announcements = soup.find_all("a", class_="w3-leftbar")  # This assumes the outage descriptions are inside <a> tags with class="w3-leftbar"
     
     for announcement in announcements:
-        # Extract date, time, duration, and description
-        date = announcement.find("span", class_="date-class").text  # Replace with actual tags
-        time = announcement.find("span", class_="time-class").text  # Replace with actual tags
-        duration = announcement.find("span", class_="duration-class").text  # Replace with actual tags
-        description = announcement.text  # Or refine with other tags
-        
-        # Print the extracted details
-        print(f"Date: {date}, Time: {time}, Duration: {duration}")
-        print(f"Description: {description}")
+        # Print only the text within the <a> tag, which contains the description
+        description = announcement.get_text(strip=True)  # strip=True removes extra whitespace
+        if "CPH" in description and "electrical shutdown" in description.lower():
+            print(description)
 else:
-    print(f"Fetch the page")
+    print("er")
