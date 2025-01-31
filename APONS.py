@@ -1,5 +1,34 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import requests
 from bs4 import BeautifulSoup
+
+def send_email(des):
+    email_subject = "Power Outage Notification - CPH Electrical Shutdown"
+    email_body = "The following power outages have been detected:\n\n"
+    email_body += des
+
+        # Send email
+    sender_email = "...@gmail.com" # pink an email
+    sender_password = ""  # Use an app password 
+    recipient_emails = ["...@gmail.com", "...@gmail.com"] # Change to the actual recipient
+
+    msg = MIMEMultipart()
+    msg["From"] = sender_email
+    msg["To"] = ", ".join(recipient_emails)
+    msg["Subject"] = email_subject
+    msg.attach(MIMEText(email_body, "plain"))
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)  # Use correct SMTP server
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, recipient_emails, msg.as_string())
+        server.quit()
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 url = "https://plantops.uwaterloo.ca/service-interruptions/"  # Replace with the correct URL
 headers = {
@@ -20,5 +49,6 @@ if response.status_code == 200:
         description = announcement.get_text(strip=True)  # strip=True removes extra whitespace
         if "CPH" in description and "electrical shutdown" in description.lower():
             print(description)
+            send_email(description)
 else:
     print("er")
