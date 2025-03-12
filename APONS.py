@@ -6,6 +6,28 @@ from bs4 import BeautifulSoup
 import time
 
 current_messages = []
+
+def create_discussion(description):
+    url = "https://api.github.com/WATonomous/infrastructure-support/discussions"  # Replace with actual repo details
+    headers = {
+        "Authorization": "Bearer YOUR_GITHUB_TOKEN",  # Replace with a valid GitHub token
+        "Accept": "application/vnd.github.v3+json"
+    }
+    data = {
+        "title": "Power Outage Notification - CPH Electrical Shutdown",
+        "body": description,
+        "category_id": ""  # Im not sure what this needs to be
+    }
+    
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code == 201:
+            print("GitHub Discussion post created successfully!")
+        else:
+            print(f"Error creating GitHub Discussion post: {response.status_code}, {response.text}")
+    except Exception as e:
+        print(f"Exception occurred while creating GitHub Discussion post: {e}")
+        
 def send_email(des):
     email_subject = "Power Outage Notification - CPH Electrical Shutdown"
     email_body = "The following power outages have been detected:\n\n"
@@ -54,7 +76,7 @@ def get_info():
                     pass
                 else:
                     print(description) # we probobly dont actually need this
-                    send_email(description)
+                    send_email(description)          # we can switch this out for add discussion post
                     current_messages.append(description)
     else:
         print("er")
